@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import CreateTaskModal from '../components/CreateTaskModal.vue'
+import TaskModal from '../components/TaskModal.vue'
+import DeleteTaskModal from '../components/DeleteTaskModal.vue'
 
 interface Task {
   id: number
@@ -16,47 +17,100 @@ const tasks = ref<Task[]>([
   { id: 5, title: 'Prepare weekly report', completed: false },
 ])
 
-const showCreateModal = ref(false)
+const showTaskModal = ref(false)
+const showDeleteModal = ref(false)
+const selectedTask = ref<Task | undefined>()
 
 const toggleComplete = (taskId: number) => {
-  const task = tasks.value.find(t => t.id === taskId)
+  const task = tasks.value.find((t) => t.id === taskId)
   if (task) {
     task.completed = !task.completed
   }
 }
 
-const createTask = ({ title }: { title: string }) => {
-  const newId = Math.max(0, ...tasks.value.map(t => t.id)) + 1
-  tasks.value.push({
-    id: newId,
-    title,
-    completed: false
-  })
+const handleSaveTask = ({ id, title }: { id?: number; title: string }) => {
+  if (id) {
+    const task = tasks.value.find((t) => t.id === id)
+    if (task) {
+      task.title = title
+    }
+  } else {
+    const newId = Math.max(0, ...tasks.value.map((t) => t.id)) + 1
+    tasks.value.push({
+      id: newId,
+      title,
+      completed: false,
+    })
+  }
+}
+
+const resetSelectedTask = () => {
+  selectedTask.value = undefined
+  showTaskModal.value = false
+  showDeleteModal.value = false
+}
+
+const deleteTask = (taskId: number) => {
+  const index = tasks.value.findIndex((t) => t.id === taskId)
+  if (index !== -1) {
+    tasks.value.splice(index, 1)
+  }
+  resetSelectedTask()
+}
+
+const openCreateModal = () => {
+  resetSelectedTask()
+  showTaskModal.value = true
+}
+
+const openEditModal = (task: Task) => {
+  selectedTask.value = task
+  showTaskModal.value = true
+}
+
+const openDeleteModal = (task: Task) => {
+  selectedTask.value = task
+  showDeleteModal.value = true
 }
 </script>
 
 <template>
   <div class="tasks-page">
     <h1>Tasks</h1>
-    <button class="create-button" @click="showCreateModal = true">
-      Create New Task
-    </button>
+    <button class="create-button" @click="openCreateModal">Create New Task</button>
     <div class="tasks-list">
-      <div v-for="task in tasks" 
-           :key="task.id" 
-           class="task-item"
-           :class="{ completed: task.completed }">
+      <div
+        v-for="task in tasks"
+        :key="task.id"
+        class="task-item"
+        :class="{ completed: task.completed }"
+      >
         <span class="task-title">{{ task.title }}</span>
-        <button @click="toggleComplete(task.id)">
-          {{ task.completed ? 'Mark Incomplete' : 'Mark Complete' }}
-        </button>
+        <div class="task-actions">
+          <button class="icon-button edit" @click="openEditModal(task)" title="Edit">✎</button>
+          <button class="icon-button delete" @click="openDeleteModal(task)" title="Delete">
+            ×
+          </button>
+          <button class="complete-button" @click="toggleComplete(task.id)">
+            {{ task.completed ? 'Mark Incomplete' : 'Mark Complete' }}
+          </button>
+        </div>
       </div>
     </div>
 
-    <CreateTaskModal
-      :show="showCreateModal"
-      @close="showCreateModal = false"
-      @create="createTask"
+    <TaskModal
+      :show="showTaskModal"
+      :task="selectedTask"
+      @close="resetSelectedTask"
+      @save="handleSaveTask"
+    />
+
+    <DeleteTaskModal
+      v-if="selectedTask"
+      :show="showDeleteModal"
+      :task="selectedTask"
+      @close="resetSelectedTask"
+      @confirm="deleteTask"
     />
   </div>
 </template>
@@ -67,22 +121,6 @@ const createTask = ({ title }: { title: string }) => {
   flex-direction: column;
   align-items: center;
   padding: 2rem;
-}
-
-.create-button {
-  margin: 1rem 0;
-  padding: 0.75rem 1.5rem;
-  background-color: #2196F3;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.2s;
-}
-
-.create-button:hover {
-  background-color: #1976D2;
 }
 
 .tasks-list {
@@ -107,25 +145,73 @@ const createTask = ({ title }: { title: string }) => {
   color: #888;
 }
 
-button {
+.task-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.icon-button {
+  padding: 0.25rem 0.5rem;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.icon-button.edit {
+  background-color: #ffc107;
+}
+
+.icon-button.edit:hover {
+  background-color: #e0a800;
+}
+
+.icon-button.delete {
+  background-color: #dc3545;
+}
+
+.icon-button.delete:hover {
+  background-color: #c82333;
+}
+
+.create-button {
+  margin: 1rem 0;
+  padding: 0.75rem 1.5rem;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s;
+}
+
+.create-button:hover {
+  background-color: #1976d2;
+}
+
+.complete-button {
   padding: 0.5rem 1rem;
   border: none;
   border-radius: 4px;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
-button:hover {
+.complete-button:hover {
   background-color: #45a049;
 }
 
-.completed button {
+.completed .complete-button {
   background-color: #666;
 }
 
-.completed button:hover {
+.completed .complete-button:hover {
   background-color: #555;
 }
 </style>
