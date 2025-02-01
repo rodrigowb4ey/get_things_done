@@ -1,25 +1,15 @@
 <template>
-  <nav>
-    <RouterLink to="/">Home</RouterLink> | <RouterLink to="/tasks">Tasks</RouterLink> |
-    <RouterLink to="/workouts">Workouts</RouterLink>
+  <nav class="py-8 text-center">
+    <RouterLink 
+      v-for="link in ['/', '/tasks', '/workouts']" 
+      :key="link"
+      :to="link"
+      class="mx-4 text-slate-700 no-underline hover:text-slate-900 transition-colors"
+      :class="{ 'font-bold': $route.path === link }"
+    >
+      {{ link === '/' ? 'Home' : link.slice(1).charAt(0).toUpperCase() + link.slice(2) }}
+    </RouterLink>
   </nav>
 
   <RouterView />
 </template>
-
-<style scoped>
-nav {
-  padding: 2rem;
-  text-align: center;
-}
-
-nav a {
-  margin: 0 1rem;
-  text-decoration: none;
-  color: #2c3e50;
-}
-
-nav a.router-link-active {
-  font-weight: bold;
-}
-</style>

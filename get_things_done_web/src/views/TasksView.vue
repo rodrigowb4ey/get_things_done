@@ -75,23 +75,52 @@ const openDeleteModal = (task: Task) => {
 </script>
 
 <template>
-  <div class="tasks-page">
-    <h1>Tasks</h1>
-    <button class="create-button" @click="openCreateModal">Create New Task</button>
-    <div class="tasks-list">
-      <div
-        v-for="task in tasks"
-        :key="task.id"
-        class="task-item"
-        :class="{ completed: task.completed }"
+  <div class="flex flex-col items-center p-8">
+    <h1 class="text-3xl font-bold mb-4">Tasks</h1>
+    
+    <button 
+      class="mb-8 px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-lg"
+      @click="openCreateModal"
+    >
+      Create New Task
+    </button>
+
+    <div class="w-full max-w-2xl">
+      <div 
+        v-for="task in tasks" 
+        :key="task.id" 
+        class="mb-3 p-4 bg-white border border-gray-200 rounded-lg shadow-sm flex items-center justify-between"
+        :class="{ 'bg-gray-50': task.completed }"
       >
-        <span class="task-title">{{ task.title }}</span>
-        <div class="task-actions">
-          <button class="icon-button edit" @click="openEditModal(task)" title="Edit">✎</button>
-          <button class="icon-button delete" @click="openDeleteModal(task)" title="Delete">
+        <span 
+          class="text-lg"
+          :class="{ 'line-through text-gray-500': task.completed }"
+        >
+          {{ task.title }}
+        </span>
+        
+        <div class="flex items-center gap-2">
+          <button 
+            class="p-2 text-lg bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors"
+            @click="openEditModal(task)" 
+            title="Edit"
+          >
+            ✎
+          </button>
+          <button 
+            class="p-2 text-lg bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+            @click="openDeleteModal(task)" 
+            title="Delete"
+          >
             ×
           </button>
-          <button class="complete-button" @click="toggleComplete(task.id)">
+          <button 
+            class="px-4 py-2 rounded transition-colors text-white"
+            :class="task.completed ? 
+              'bg-gray-600 hover:bg-gray-700' : 
+              'bg-green-600 hover:bg-green-700'"
+            @click="toggleComplete(task.id)"
+          >
             {{ task.completed ? 'Mark Incomplete' : 'Mark Complete' }}
           </button>
         </div>
@@ -114,104 +143,3 @@ const openDeleteModal = (task: Task) => {
     />
   </div>
 </template>
-
-<style scoped>
-.tasks-page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 2rem;
-}
-
-.tasks-list {
-  width: 100%;
-  max-width: 600px;
-  margin-top: 2rem;
-}
-
-.task-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  margin-bottom: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: white;
-}
-
-.task-item.completed .task-title {
-  text-decoration: line-through;
-  color: #888;
-}
-
-.task-actions {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.icon-button {
-  padding: 0.25rem 0.5rem;
-  border: none;
-  border-radius: 4px;
-  color: white;
-  cursor: pointer;
-  font-size: 1.2rem;
-  line-height: 1;
-}
-
-.icon-button.edit {
-  background-color: #ffc107;
-}
-
-.icon-button.edit:hover {
-  background-color: #e0a800;
-}
-
-.icon-button.delete {
-  background-color: #dc3545;
-}
-
-.icon-button.delete:hover {
-  background-color: #c82333;
-}
-
-.create-button {
-  margin: 1rem 0;
-  padding: 0.75rem 1.5rem;
-  background-color: #2196f3;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.2s;
-}
-
-.create-button:hover {
-  background-color: #1976d2;
-}
-
-.complete-button {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 4px;
-  background-color: #4caf50;
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.complete-button:hover {
-  background-color: #45a049;
-}
-
-.completed .complete-button {
-  background-color: #666;
-}
-
-.completed .complete-button:hover {
-  background-color: #555;
-}
-</style>

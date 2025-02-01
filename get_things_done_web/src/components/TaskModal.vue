@@ -49,23 +49,35 @@ const handleClose = () => {
 </script>
 
 <template>
-  <div v-if="show" class="modal-backdrop" @click="handleClose">
-    <div class="modal" @click.stop>
-      <h2>{{ task ? 'Edit Task' : 'Create New Task' }}</h2>
+  <div v-if="show" 
+       class="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
+       @click="handleClose">
+    <div class="bg-white p-8 rounded-lg w-[90%] max-w-lg" @click.stop>
+      <h2 class="text-2xl font-bold mb-4">{{ task ? 'Edit Task' : 'Create New Task' }}</h2>
       <form @submit.prevent="handleSubmit">
-        <div class="form-group">
-          <label for="taskTitle">Task Title:</label>
+        <div class="mb-4">
+          <label for="taskTitle" class="block mb-2">Task Title:</label>
           <input
             id="taskTitle"
             v-model="taskTitle"
             type="text"
             placeholder="Enter task title"
             required
+            class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
-        <div class="button-group">
-          <button type="button" class="cancel-button" @click="handleClose">Cancel</button>
-          <button type="submit" class="submit-button">
+        <div class="flex justify-end gap-4 mt-6">
+          <button 
+            type="button" 
+            class="px-4 py-2 rounded bg-gray-600 text-white hover:bg-gray-700 transition-colors"
+            @click="handleClose"
+          >
+            Cancel
+          </button>
+          <button 
+            type="submit"
+            class="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700 transition-colors"
+          >
             {{ task ? 'Save' : 'Create Task' }}
           </button>
         </div>
@@ -73,75 +85,3 @@ const handleClose = () => {
     </div>
   </div>
 </template>
-
-<style scoped>
-.modal-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 100;
-}
-
-.modal {
-  background-color: white;
-  padding: 2rem;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 500px;
-}
-
-.form-group {
-  margin-bottom: 1rem;
-}
-
-label {
-  display: block;
-  margin-bottom: 0.5rem;
-}
-
-input {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
-}
-
-.button-group {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 1.5rem;
-}
-
-.cancel-button {
-  background-color: #666;
-}
-
-.cancel-button:hover {
-  background-color: #555;
-}
-
-.submit-button {
-  background-color: #4caf50;
-}
-
-.submit-button:hover {
-  background-color: #45a049;
-}
-
-button {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 4px;
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-</style>
